@@ -144,3 +144,5 @@ network.yml
 kubernetes/models
 docker-compose-one-replica.yml
 docker_for_test_dream/tests/wav_files/Move forward please.wav
+
+*.pem
