@@ -962,3 +962,9 @@ def hypotheses_with_context_list(dialog: Dict) -> List[Dict]:
     contexts = len(hypots) * [dialog["human_utterances"][-1]["text"]]
 
     return [{"dialog_contexts": contexts, "hypotheses": hypots}]
+
+
+def robot_formatter(dialog: Dict) -> Dict:
+    """This formatter currently provides the JSON as is, without modifying it.
+    Either edit it later or choose one of the existing formatters"""
+    return dialog
