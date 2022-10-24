@@ -1,6 +1,6 @@
 services:
   agent:
-    command: sh -c 'bin/wait && python -m deeppavlov_agent.run agent.pipeline_config=assistant_dists/dream_russian/pipeline_conf.json'
+    command: sh -c 'bin/wait && python -m deeppavlov_agent.run agent.pipeline_config=assistant_dists/dream_russian_robot/pipeline_conf.json'
     environment:
       WAIT_HOSTS: "dff-program-y-skill:8008, convers-evaluation-selector:8009, 
           dff-intent-responder-skill:8012, intent-catcher:8014, badlisted-words:8018,
@@ -62,7 +62,7 @@ services:
       args:
         SERVICE_PORT: 8012
         SERVICE_NAME: dff_intent_responder_skill
-        INTENT_RESPONSE_PHRASES_FNAME: intent_response_phrases_RU.json
+        INTENT_RESPONSE_PHRASES_FNAME: intent_response_phrases_robot_RU.json
         LANGUAGE: RU
       context: .
       dockerfile: ./skills/dff_intent_responder_skill/Dockerfile
