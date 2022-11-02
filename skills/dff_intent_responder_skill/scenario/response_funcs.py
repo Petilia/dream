@@ -167,16 +167,28 @@ def turn_around_respond(ctx: Context, actor: Actor, intention: str):
     degree = re.findall(r"[0-9]+", utt["text"])
     if re.search(r"counter[- ]?clock-?wise", utt["text"]):
         command = "turn_counterclockwise"
-        if LANGUAGE == "RU":
-            response = f"Поворачиваюсь против часовой стрелки на {degree} градусов."
+        if len(degree) == 1:
+            if LANGUAGE == "RU":
+                response = f"Поворачиваюсь против часовой стрелки на {degree[0]} градусов."
+            else:
+                response = f"Turning around counterclockwise by {degree[0]} degrees."
         else:
-            response = f"Turning around counterclockwise by {degree} degrees."
+            if LANGUAGE == "RU":
+                response = f"Поворачиваюсь против часовой стрелки."
+            else:
+                response = f"Turning around counterclockwise."
     else:
         command = "turn_clockwise"
-        if LANGUAGE == "RU":
-            response = f"Поворачиваюсь по часовой стрелке на {degree} градусов."
+        if len(degree) == 1:
+            if LANGUAGE == "RU":
+                response = f"Поворачиваюсь по часовой стрелке на {degree[0]} градусов."
+            else:
+                response = f"Turning around clockwise by {degree[0]} degrees."
         else:
-            response = f"Turning around clockwise by {degree} degrees."
+            if LANGUAGE == "RU":
+                response = f"Поворачиваюсь по часовой стрелке."
+            else:
+                response = f"Turning around clockwise."
     send_command_to_robot(command)
     return response
 
@@ -187,9 +199,9 @@ def move_forward_respond(ctx: Context, actor: Actor, intention: str):
     if len(dist) == 1:
         command = f"move_forward_{dist[0]}"
         if LANGUAGE == "RU":
-            response = f"Двигаюсь вперед на {dist} метров."
+            response = f"Двигаюсь вперед на {dist[0]} метров."
         else:
-            response = f"Moving forward by {dist} meters."
+            response = f"Moving forward by {dist[0]} meters."
     else:
         command = "move_forward"
         if LANGUAGE == "RU":
@@ -207,9 +219,9 @@ def move_backward_respond(ctx: Context, actor: Actor, intention: str):
     if len(dist) == 1:
         command = f"move_backward_{dist[0]}"
         if LANGUAGE == "RU":
-            response = f"Двигаюсь назад на {dist} метров."
+            response = f"Двигаюсь назад на {dist[0]} метров."
         else:
-            response = f"Moving backward by {dist} meters."
+            response = f"Moving backward by {dist[0]} meters."
     else:
         command = "move_backward"
         if LANGUAGE == "RU":
