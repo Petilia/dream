@@ -3,10 +3,10 @@ import logging
 import json
 import random
 import re
-import aiohttp
-from fastapi import FastAPI
 from datetime import datetime
 from os import getenv
+import requests
+import json
 
 import common.dff.integration.context as int_ctx
 from common.utils import get_entities
@@ -140,21 +140,10 @@ def get_human_utterances(ctx: Context, actor: Actor) -> list:
 
 def send_command_to_robot(command):
     ROS_FSM_SERVER = "http://172.17.0.1:5000"
-    # Please see https://stackoverflow.com/a/62002628
-    ROS_FSM_STATUS_ENDPOINT = f"{ROS_FSM_SERVER}/robot_status"
-    ROS_FSM_INTENT_ENDPOINT = f"{ROS_FSM_SERVER}/upload_intent"
-    logger.error(f"Sending to robot the command:\n{command}")
+    ROS_FSM_INTENT_ENDPOINT = f"{ROS_FSM_SERVER}/upload_response"
+    logger.info(f"Sending to robot:\n{command}")
 
-    async with aiohttp.ClientSession() as sess:
-        async with sess.get(ROS_FSM_STATUS_ENDPOINT) as status_response:
-            is_free = (await status_response.json()).get("status") == "free"
-
-            logger.error(f"Robot status: {is_free}")
-
-            if is_free:
-                payload = command  # fix this to actually post what you need
-                await sess.post(ROS_FSM_INTENT_ENDPOINT, data=json.dumps(payload))
-    return [command]
+    requests.post(ROS_FSM_INTENT_ENDPOINT, data=json.dumps({"text": command}))
 
 
 def track_object_respond(ctx: Context, actor: Actor, intention: str):
