@@ -46,9 +46,6 @@ def main():
     for data in request_data:
         result = requests.post(url, json=data).json()
         print(result)
-     
-
-
 
 
 if __name__ == "__main__":
