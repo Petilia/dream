@@ -130,7 +130,8 @@ def get_respond_funcs():
         "move_forward": move_forward_respond,
         "move_backward": move_backward_respond,
         "open_door": open_door_respond,
-        "move_to_point": move_to_point_respond
+        "move_to_point": move_to_point_respond,
+        "интентище": custom_intent_respond
     }
 
 
@@ -141,10 +142,14 @@ def get_human_utterances(ctx: Context, actor: Actor) -> list:
 def send_command_to_robot(command):
     ROS_FSM_SERVER = "http://172.17.0.1:5000"
     ROS_FSM_INTENT_ENDPOINT = f"{ROS_FSM_SERVER}/upload_response"
-    logger.info(f"Sending to robot:\n{command}")
+    logger.error(f"Sending to robot:\n{command}")
 
     requests.post(ROS_FSM_INTENT_ENDPOINT, data=json.dumps({"text": command}))
 
+def custom_intent_respond(ctx: Context, actor: Actor, intention: str):
+    send_command_to_robot("custom_intent")
+    response = 'Мой интент'
+    return response
 
 def track_object_respond(ctx: Context, actor: Actor, intention: str):
     utt = int_ctx.get_last_human_utterance(ctx, actor)
