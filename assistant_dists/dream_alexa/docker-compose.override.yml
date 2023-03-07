@@ -3,7 +3,7 @@ services:
     command: sh -c 'bin/wait && python -m deeppavlov_agent.run agent.pipeline_config=assistant_dists/dream_alexa/pipeline_conf.json'
     environment:
       WAIT_HOSTS: "convers-evaluator-annotator:8004,
-          spacy-nounphrases:8006, dff-program-y-skill:8008, sentseg:8011, convers-evaluation-selector:8009,
+          spacy-nounphrases:8006, dff-program-y-skill:8008, sentseg:8011, scripts-priority-selector:8009,
           personality-catcher:8010, dff-intent-responder-skill:8012, intent-catcher:8014, badlisted-words:8018,
           sentrewrite:8017, ner:8021, dff-program-y-dangerous-skill:8022, dff-movie-skill:8023,
           convert-reddit:8029, personal-info-skill:8030, asr:8031, misheard-asr:8033, dff-weather-skill:8037,
@@ -49,6 +49,9 @@ services:
   spacy-nounphrases:
     env_file: [.env]
     build:
+      args:
+        SERVICE_PORT: 8006
+        SERVICE_NAME: spacy_nounphrases
       context: .
       dockerfile: ./annotators/spacy_nounphrases/Dockerfile
     command: flask run -h 0.0.0.0 -p 8006
@@ -104,7 +107,7 @@ services:
         reservations:
           memory: 1.5G
 
-  convers-evaluation-selector:
+  scripts-priority-selector:
     env_file: [.env]
     build:
       args:
@@ -192,6 +195,9 @@ services:
   badlisted-words:
     env_file: [.env]
     build:
+      args:
+        SERVICE_PORT: 8018
+        SERVICE_NAME: badlisted_words
       context: annotators/BadlistedWordsDetector/
     command: flask run -h 0.0.0.0 -p 8018
     environment:
@@ -374,7 +380,7 @@ services:
       args:
         GRAPH: atomic
         SERVICE_HOME: ./annotators/COMeT
-        SERVICE_NAME: comet-atomic
+        SERVICE_NAME: comet_atomic
         SERVICE_PORT: 8053
         PRETRAINED_MODEL: http://lnsigo.mipt.ru/export/alexaprize_data/comet/atomic_pretrained_model.pickle
         PREPROCESS_DATA: "http://lnsigo.mipt.ru/export/alexaprize_data/comet/categories_oEffect%23oReact%23oWant%23xAttr%23xEffect%23xIntent%23xNeed%23xReact%23xWant-maxe1_17-maxe2_35-maxr_1.pickle"
@@ -396,7 +402,7 @@ services:
       args:
         GRAPH: conceptnet
         SERVICE_HOME: ./annotators/COMeT/
-        SERVICE_NAME: comet-conceptnet
+        SERVICE_NAME: comet_conceptnet
         SERVICE_PORT: 8065
         PRETRAINED_MODEL: http://lnsigo.mipt.ru/export/alexaprize_data/conceptnet/conceptnet_pretrained_model.pickle
         PREPROCESS_DATA: http://lnsigo.mipt.ru/export/alexaprize_data/conceptnet/rel_language-trainsize_100-devversion_12-maxe1_10-maxe2_15-maxr_5.pickle
@@ -445,6 +451,7 @@ services:
     build:
       args:
         SERVICE_PORT: 8068
+        SERVICE_NAME: game_cooperative_skill
       context: .
       dockerfile: ./skills/game_cooperative_skill/Dockerfile
     command: flask run -h 0.0.0.0 -p 8068
@@ -476,6 +483,9 @@ services:
   news-api-skill:
     env_file: [.env]
     build:
+      args:
+        SERVICE_PORT: 8066
+        SERVICE_NAME: news_api_skill
       context: .
       dockerfile: ./skills/news_api_skill/Dockerfile
     environment:
@@ -492,6 +502,8 @@ services:
     env_file: [.env]
     build:
       args:
+        SERVICE_PORT: 8112
+        SERVICE_NAME: news_api_annotator
         ASYNC_SIZE: 3
       context: .
       dockerfile: ./annotators/news_api/Dockerfile
@@ -508,6 +520,9 @@ services:
   factoid-qa:
     env_file: [.env]
     build:
+      args:
+        SERVICE_PORT: 8071
+        SERVICE_NAME: factoid_qa
       context: .
       dockerfile: ./skills/factoid_qa/Dockerfile
     command: flask run -h 0.0.0.0 -p 8071
@@ -524,6 +539,8 @@ services:
     env_file: [.env]
     build:
       args:
+        SERVICE_PORT: 8075
+        SERVICE_NAME: entity_linking
         CONFIG: entity_linking_eng.json
         PORT: 8075
         SRC_DIR: annotators/entity_linking
@@ -542,6 +559,8 @@ services:
     env_file: [.env]
     build:
       args:
+        SERVICE_PORT: 8077
+        SERVICE_NAME: wiki_parser
         WIKI_LITE_DB: http://files.deeppavlov.ai/kbqa/wikidata/wikidata2022.hdt
         WIKI_LITE_INDEX_DB: http://files.deeppavlov.ai/kbqa/wikidata/wikidata2022.hdt.index.v1-1
         WIKI_CACHE_DB: http://files.deeppavlov.ai/kbqa/wikidata/wikidata_cache.json
@@ -549,6 +568,7 @@ services:
         PORT: 8077
         SRC_DIR: annotators/wiki_parser
         COMMIT: ff5b156d16a949c3ec99da7fb60ae907dec37a41
+        FAST: 1
       context: ./
       dockerfile: annotators/wiki_parser/Dockerfile
     command: flask run -h 0.0.0.0 -p 8077
@@ -566,15 +586,17 @@ services:
     env_file: [.env]
     build:
       args:
-        CONFIG: qa.json
+        SERVICE_PORT: 8078
+        SERVICE_NAME: text_qa
+        CONFIG: qa_eng.json
         PORT: 8078
-        COMMIT: 4b3e60c407644b750c9dc292ac6bf206081fb9d0
       context: services/text_qa
       dockerfile: Dockerfile
     command: flask run -h 0.0.0.0 -p 8078
     environment:
       - CUDA_VISIBLE_DEVICES=0
       - FLASK_APP=server
+      - LANGUAGE=EN
     deploy:
       resources:
         limits:
@@ -586,6 +608,8 @@ services:
     env_file: [.env]
     build:
       args:
+        SERVICE_PORT: 8072
+        SERVICE_NAME: kbqa
         CONFIG: kbqa_cq_mt_bert_lite.json
         PORT: 8072
         SRC_DIR: annotators/kbqa/
@@ -606,6 +630,9 @@ services:
   spelling-preprocessing:
     env_file: [ .env ]
     build:
+      args:
+        SERVICE_PORT: 8074
+        SERVICE_NAME: spelling_preprocessing
       context: ./annotators/spelling_preprocessing/
     command: flask run -h 0.0.0.0 -p 8074
     environment:
@@ -637,6 +664,8 @@ services:
     env_file: [.env]
     build:
       args:
+        SERVICE_PORT: 8083
+        SERVICE_NAME: knowledge_grounding
         MODEL_CKPT: 3_sent_62_epochs
         DATA_ARG: http://files.deeppavlov.ai/alexaprize_data/parlai_grounding_knowledge/parlai_topical_chat_data.tar.gz
         MODEL1_ARG: http://files.deeppavlov.ai/alexaprize_data/parlai_grounding_knowledge/topical_chat_blender90_1_sent_48_epochs.tar.gz
@@ -696,11 +725,12 @@ services:
   entity-storer:
     env_file: [.env]
     build:
+      args:
+        SERVICE_PORT: 8089
+        SERVICE_NAME: entity_storer
+        WORK_DIR: annotators/entity_storer
       context: .
       dockerfile: annotators/entity_storer/Dockerfile
-      args:
-        WORK_DIR: annotators/entity_storer
-        SERVICE_PORT: 8089
     command: flask run -h 0.0.0.0 -p 8089
     environment:
       - FLASK_APP=server
@@ -714,6 +744,9 @@ services:
   knowledge-grounding-skill:
     env_file: [.env]
     build:
+      args:
+        SERVICE_PORT: 8085
+        SERVICE_NAME: knowledge_grounding_skill
       context: .
       dockerfile: ./skills/knowledge_grounding_skill/Dockerfile
     command: python -m flask run -h 0.0.0.0 -p 8085
@@ -731,6 +764,8 @@ services:
     env_file: [.env]
     build:
       args:
+        SERVICE_PORT: 8087
+        SERVICE_NAME: combined_classification
         CONFIG: combined_classifier.json
         PORT: 8087
       context: .
@@ -880,6 +915,8 @@ services:
     env_file: [.env]
     build:
       args:
+        SERVICE_PORT: 8090
+        SERVICE_NAME: midas_classification
         CONFIG: midas_conv_bert.json
       context: ./annotators/midas_classification
     command: flask run -h 0.0.0.0 -p 8090
@@ -915,6 +952,8 @@ services:
     env_file: [.env]
     build:
       args:
+        SERVICE_PORT: 8100
+        SERVICE_NAME: fact_retrieval
         CONFIG: configs/fact_retrieval_page.json
         CONFIG_WIKI: configs/page_extractor.json
         CONFIG_WHOW: configs/whow_page_extractor.json
@@ -993,6 +1032,9 @@ services:
   topic-recommendation:
     env_file: [.env]
     build:
+      args:
+        SERVICE_PORT: 8113
+        SERVICE_NAME: topic_recommendation
       context: ./annotators/topic_recommendation/
     command: flask run -h 0.0.0.0 -p 8113
     environment:
@@ -1007,6 +1049,9 @@ services:
   user-persona-extractor:
     env_file: [.env]
     build:
+      args:
+        SERVICE_PORT: 8114
+        SERVICE_NAME: user_persona_extractor
       context: .
       dockerfile: ./annotators/user_persona_extractor/Dockerfile
     command: flask run -h 0.0.0.0 -p 8114
@@ -1055,13 +1100,13 @@ services:
           memory: 512M
         reservations:
           memory: 512M
- 
+
   entity-detection:
-    env_file: [.env]
+    env_file: [ .env ]
     build:
       args:
-        SEQ_TAG_CONFIG: src/wikipedia_entity_detection_distilbert.json
-        EL_TAG_CONFIG: src/el_tags_infer.json
+        SERVICE_NAME: entity_detection
+        SEQ_TAG_CONFIG: wikipedia_entity_detection_distilbert.json
         CONFIG: entity_detection_eng.json
         LOWERCASE: 1
         PORT: 8103

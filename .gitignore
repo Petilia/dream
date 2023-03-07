@@ -146,3 +146,6 @@ docker-compose-one-replica.yml
 docker_for_test_dream/tests/wav_files/Move forward please.wav
 
 *.pem
+
+# personal env keys and tokens
+.env_secret
