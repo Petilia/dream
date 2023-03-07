@@ -1,6 +1,6 @@
 services:
 
-  dff-program-y-skill:
+  dff-program-y-ru-skill:
     command: ["nginx", "-g", "daemon off;"]
     build:
       context: dp/proxy/
@@ -9,7 +9,7 @@ services:
       - PROXY_PASS=dream.deeppavlov.ai:9008
       - PORT=8008
 
-  badlisted-words:
+  badlisted-words-ru:
     command: ["nginx", "-g", "daemon off;"]
     build:
       context: dp/proxy/
@@ -18,7 +18,7 @@ services:
       - PROXY_PASS=dream.deeppavlov.ai:9018
       - PORT=8018
 
-  ner:
+  ner-ru:
     command: ["nginx", "-g", "daemon off;"]
     build:
       context: dp/proxy/
@@ -27,7 +27,7 @@ services:
       - PROXY_PASS=dream.deeppavlov.ai:9021
       - PORT=8021
 
-  personal-info-skill:
+  personal-info-ru-skill:
     command: ["nginx", "-g", "daemon off;"]
     build:
       context: dp/proxy/
@@ -36,7 +36,7 @@ services:
       - PROXY_PASS=dream.deeppavlov.ai:9030
       - PORT=8030
 
-  dff-friendship-skill:
+  dff-friendship-ru-skill:
     command: ["nginx", "-g", "daemon off;"]
     build:
       context: dp/proxy/
@@ -45,7 +45,7 @@ services:
       - PROXY_PASS=dream.deeppavlov.ai:9086
       - PORT=8086
 
-  entity-detection:
+  entity-detection-ru:
     command: [ "nginx", "-g", "daemon off;" ]
     build:
       context: dp/proxy/
@@ -54,7 +54,7 @@ services:
       - PROXY_PASS=dream.deeppavlov.ai:9203
       - PORT=8103
 
-  dialogpt:
+  dialogpt-ru:
     command: [ "nginx", "-g", "daemon off;" ]
     build:
       context: dp/proxy/
@@ -63,7 +63,7 @@ services:
       - PROXY_PASS=dream.deeppavlov.ai:9091
       - PORT=8091
 
-  toxic-classification:
+  toxic-classification-ru:
     command: [ "nginx", "-g", "daemon off;" ]
     build:
       context: dp/proxy/
@@ -72,7 +72,7 @@ services:
       - PROXY_PASS=dream.deeppavlov.ai:9126
       - PORT=8126
 
-  spacy-annotator:
+  spacy-annotator-ru:
     command: [ "nginx", "-g", "daemon off;" ]
     build:
       context: dp/proxy/
@@ -81,7 +81,7 @@ services:
       - PROXY_PASS=dream.deeppavlov.ai:9125
       - PORT=8125
 
-  dff-generative-skill:
+  dff-generative-ru-skill:
     command: [ "nginx", "-g", "daemon off;" ]
     build:
       context: dp/proxy/
@@ -90,7 +90,7 @@ services:
       - PROXY_PASS=dream.deeppavlov.ai:9092
       - PORT=8092
 
-  dialogrpt:
+  dialogrpt-ru:
     command: [ "nginx", "-g", "daemon off;" ]
     build:
       context: dp/proxy/
@@ -98,14 +98,5 @@ services:
     environment:
       - PROXY_PASS=dream.deeppavlov.ai:9122
       - PORT=8122
-
-  dff-template-skill:
-    command: [ "nginx", "-g", "daemon off;" ]
-    build:
-      context: dp/proxy/
-      dockerfile: Dockerfile
-    environment:
-      - PROXY_PASS=dream.deeppavlov.ai:9120
-      - PORT=8120
 
 version: '3.7'
