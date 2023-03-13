@@ -1,23 +1,5 @@
 services:
 
-  dff-program-y-ru-skill:
-    command: ["nginx", "-g", "daemon off;"]
-    build:
-      context: dp/proxy/
-      dockerfile: Dockerfile
-    environment:
-      - PROXY_PASS=dream.deeppavlov.ai:9008
-      - PORT=8008
-
-  badlisted-words-ru:
-    command: ["nginx", "-g", "daemon off;"]
-    build:
-      context: dp/proxy/
-      dockerfile: Dockerfile
-    environment:
-      - PROXY_PASS=dream.deeppavlov.ai:9018
-      - PORT=8018
-
   ner-ru:
     command: ["nginx", "-g", "daemon off;"]
     build:
@@ -26,24 +8,6 @@ services:
     environment:
       - PROXY_PASS=dream.deeppavlov.ai:9021
       - PORT=8021
-
-  personal-info-ru-skill:
-    command: ["nginx", "-g", "daemon off;"]
-    build:
-      context: dp/proxy/
-      dockerfile: Dockerfile
-    environment:
-      - PROXY_PASS=dream.deeppavlov.ai:9030
-      - PORT=8030
-
-  dff-friendship-ru-skill:
-    command: ["nginx", "-g", "daemon off;"]
-    build:
-      context: dp/proxy/
-      dockerfile: Dockerfile
-    environment:
-      - PROXY_PASS=dream.deeppavlov.ai:9086
-      - PORT=8086
 
   entity-detection-ru:
     command: [ "nginx", "-g", "daemon off;" ]
@@ -71,24 +35,6 @@ services:
     environment:
       - PROXY_PASS=dream.deeppavlov.ai:9126
       - PORT=8126
-
-  spacy-annotator-ru:
-    command: [ "nginx", "-g", "daemon off;" ]
-    build:
-      context: dp/proxy/
-      dockerfile: Dockerfile
-    environment:
-      - PROXY_PASS=dream.deeppavlov.ai:9125
-      - PORT=8125
-
-  dff-generative-ru-skill:
-    command: [ "nginx", "-g", "daemon off;" ]
-    build:
-      context: dp/proxy/
-      dockerfile: Dockerfile
-    environment:
-      - PROXY_PASS=dream.deeppavlov.ai:9092
-      - PORT=8092
 
   dialogrpt-ru:
     command: [ "nginx", "-g", "daemon off;" ]
