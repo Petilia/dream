@@ -55,6 +55,8 @@ services:
   dialogpt:
     volumes:
       - "./services/dialogpt:/src"
+      - "./common:/src/common"
+      - "~/.deeppavlov/cache:/root/.cache"
     ports:
       - 8125:8125
   entity-detection:
