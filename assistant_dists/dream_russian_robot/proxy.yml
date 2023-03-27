@@ -24,7 +24,7 @@ services:
       context: dp/proxy/
       dockerfile: Dockerfile
     environment:
-      - PROXY_PASS=dream.deeppavlov.ai:9091
+      - PROXY_PASS=dream.deeppavlov.ai:9125
       - PORT=8091
 
   toxic-classification-ru:
