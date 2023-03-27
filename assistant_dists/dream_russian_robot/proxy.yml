@@ -24,8 +24,8 @@ services:
       context: dp/proxy/
       dockerfile: Dockerfile
     environment:
-      - PROXY_PASS=dream.deeppavlov.ai:9091
-      - PORT=8091
+      - PROXY_PASS=dream.deeppavlov.ai:9125
+      - PORT=8125
 
   toxic-classification-ru:
     command: [ "nginx", "-g", "daemon off;" ]

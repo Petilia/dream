@@ -346,9 +346,9 @@ services:
     deploy:
       resources:
         limits:
-          memory: 3G
+          memory: 7G
         reservations:
-          memory: 3G
+          memory: 7G
 
   dff-generative-ru-skill:
     env_file: [ .env_ru ]
