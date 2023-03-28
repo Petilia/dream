@@ -4,11 +4,10 @@ services:
     environment:
       WAIT_HOSTS: "dff-program-y-ru-skill:8008, convers-evaluation-selector-ru:8009, 
           dff-intent-responder-ru-skill:8012, intent-catcher-ru:8014, badlisted-words-ru:8018,
-          ner-ru:8021, personal-info-ru-skill:8030, sentseg-ru:8011,
-          spelling-preprocessing-ru:8074, entity-linking-ru:8075, wiki-parser-ru:8077, dff-generative-ru-skill:8092,
+          ner-ru:8021, personal-info-ru-skill:8030,
+          spelling-preprocessing-ru:8074, dff-generative-ru-skill:8092,
           dff-friendship-ru-skill:8086, entity-detection-ru:8103, dialogpt-ru:8125,
-          spacy-annotator-ru:8129, dialogrpt-ru:8122, toxic-classification-ru:8126,
-          fact-retrieval-ru:8130, text-qa-ru:8078"
+          spacy-annotator-ru:8129, dialogrpt-ru:8122, toxic-classification-ru:8126"
       WAIT_HOSTS_TIMEOUT: ${WAIT_TIMEOUT:-1200}
       HIGH_PRIORITY_INTENTS: 1
       RESTRICTION_FOR_SENSITIVE_CASE: 1
@@ -85,23 +84,6 @@ services:
           memory: 128M
         reservations:
           memory: 128M
-
-  sentseg-ru:
-    env_file: [ .env_ru ]
-    build:
-      args:
-        CONFIG: sentseg_ru_bert_torch.json
-      context: ./annotators/sentseg_ru
-    command: flask run -h 0.0.0.0 -p 8011
-    environment:
-      - CUDA_VISIBLE_DEVICES=0
-      - FLASK_APP=server
-    deploy:
-      resources:
-        limits:
-          memory: 3G
-        reservations:
-          memory: 3G
 
   intent-catcher-ru:
     env_file: [ .env_ru ]
@@ -218,53 +200,6 @@ services:
           memory: 128M
         reservations:
           memory: 128M
-
-  entity-linking-ru:
-    env_file: [ .env_ru ]
-    build:
-      args:
-        SERVICE_PORT: 8075
-        SERVICE_NAME: entity_linking
-        CONFIG: entity_linking_rus.json
-        SRC_DIR: annotators/entity_linking_rus
-        LANGUAGE: RU
-      context: ./
-      dockerfile: annotators/entity_linking_rus/Dockerfile
-    environment:
-      - CUDA_VISIBLE_DEVICES=0
-    deploy:
-      resources:
-        limits:
-          memory: 700M
-        reservations:
-          memory: 700M
-
-  wiki-parser-ru:
-    env_file: [ .env_ru ]
-    build:
-      args:
-        SERVICE_PORT: 8077
-        SERVICE_NAME: wiki_parser
-        WIKI_LITE_DB: http://files.deeppavlov.ai/kbqa/wikidata/wikidata2022.hdt
-        WIKI_LITE_INDEX_DB: http://files.deeppavlov.ai/kbqa/wikidata/wikidata2022.hdt.index.v1-1
-        WIKI_CACHE_DB: http://files.deeppavlov.ai/kbqa/wikidata/wikidata_cache.json
-        CONFIG: wiki_parser.json
-        SRC_DIR: annotators/wiki_parser
-        COMMIT: ff5b156d16a949c3ec99da7fb60ae907dec37a41
-        LANGUAGE: RU
-        FAST: 1
-      context: ./
-      dockerfile: annotators/wiki_parser/Dockerfile
-    command: flask run -h 0.0.0.0 -p 8077
-    environment:
-      - CUDA_VISIBLE_DEVICES=''
-      - FLASK_APP=server
-    deploy:
-      resources:
-        limits:
-          memory: 256M
-        reservations:
-          memory: 256M
 
   spelling-preprocessing-ru:
     env_file: [ .env_ru ]
@@ -384,49 +319,6 @@ services:
           memory: 4G
         reservations:
           memory: 4G
-
-  fact-retrieval-ru:
-    env_file: [ .env ]
-    build:
-      args:
-        CONFIG: fact_retrieval_rus.json
-        COMMIT: c8264bf82eaa3ed138395ab68f71d47a4175f2fc
-        TOP_N: 20
-        SERVICE_PORT: 8130
-        SRC_DIR: annotators/fact_retrieval_rus
-      context: ./
-      dockerfile: annotators/fact_retrieval_rus/Dockerfile
-    command: flask run -h 0.0.0.0 -p 8130
-    environment:
-      - CUDA_VISIBLE_DEVICES=0
-      - FLASK_APP=server
-    deploy:
-      resources:
-        limits:
-          memory: 10G
-        reservations:
-          memory: 10G
-
-  text-qa-ru:
-    env_file: [ .env ]
-    build:
-      args:
-        SERVICE_PORT: 8078
-        SERVICE_NAME: text_qa
-        CONFIG: qa_rus.json
-      context: services/text_qa
-      dockerfile: Dockerfile
-    command: flask run -h 0.0.0.0 -p 8078
-    environment:
-      - CUDA_VISIBLE_DEVICES=0
-      - FLASK_APP=server
-      - LANGUAGE=RU
-    deploy:
-      resources:
-        limits:
-          memory: 3G
-        reservations:
-          memory: 3G
 
   robot-command-sender:
     env_file: [ .env ]

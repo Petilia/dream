@@ -27,36 +27,15 @@ services:
     environment:
       - CUDA_VISIBLE_DEVICES=8
   personal-info-ru-skill:
-  entity-linking-ru:
-    volumes:
-      - "~/.deeppavlov:/root/.deeppavlov"
-  wiki-parser-ru:
-    volumes:
-      - "~/.deeppavlov:/root/.deeppavlov"
   spelling-preprocessing-ru:
   dff-friendship-ru-skill:
   entity-detection-ru:
     volumes:
       - "~/.deeppavlov:/root/.deeppavlov"
-  sentseg-ru:
-    volumes:
-      - "~/.deeppavlov:/root/.deeppavlov"
-    environment:
-      - CUDA_VISIBLE_DEVICES=7
   dialogpt-ru:
     environment:
       - CUDA_VISIBLE_DEVICES=6
   dialogrpt-ru:
     environment:
       - CUDA_VISIBLE_DEVICES=6
-  fact-retrieval-ru:
-    volumes:
-      - "~/.deeppavlov:/root/.deeppavlov"
-    environment:
-      - CUDA_VISIBLE_DEVICES=5
-  text-qa-ru:
-    volumes:
-      - "~/.deeppavlov:/root/.deeppavlov"
-    environment:
-      - CUDA_VISIBLE_DEVICES=5
 version: '3.7'

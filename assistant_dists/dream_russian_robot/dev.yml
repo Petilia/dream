@@ -23,12 +23,6 @@ services:
       - "./common:/src/common"
     ports:
       - 8012:8012
-  sentseg-ru:
-    volumes:
-      - "./annotators/sentseg_ru:/src"
-      - "~/.deeppavlov:/root/.deeppavlov"
-    ports:
-      - 8011:8011
   intent-catcher-ru:
     volumes:
       - "./annotators/IntentCatcherTransformers:/src"
@@ -60,18 +54,6 @@ services:
       - "./common:/src/common"
     ports:
       - 8030:8030
-  entity-linking-ru:
-    volumes:
-      - "./annotators/entity_linking_rus:/src"
-      - "~/.deeppavlov:/root/.deeppavlov"
-    ports:
-      - 8075:8075
-  wiki-parser-ru:
-    volumes:
-      - "./annotators/wiki_parser:/src"
-      - "./common:/src/common"
-    ports:
-      - 8077:8077
   mongo:
     ports:
       - 27017:27017
@@ -119,18 +101,6 @@ services:
       - "~/.deeppavlov/cache:/root/.cache"
     ports:
       - 8122:8122
-  fact-retrieval-ru:
-    volumes:
-      - "./annotators/fact_retrieval_rus:/src"
-      - "~/.deeppavlov:/root/.deeppavlov"
-    ports:
-      - 8130:8130
-  text-qa-ru:
-    volumes:
-      - "./services/text_qa:/src"
-      - "~/.deeppavlov:/root/.deeppavlov"
-    ports:
-      - 8078:8078
   robot-command-sender:
     volumes:
       - "./services/robot_command_sender:/src"
