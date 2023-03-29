@@ -14,6 +14,8 @@ logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
 
+VALID_COMMANDS = ["track_object", "turn_around", "move_forward", "move_backward", "open_door", "move_to_point"]
+
 
 @app.route("/ping", methods=["POST"])
 def ping():
@@ -25,7 +27,7 @@ def respond_is_command_valid():
     st_time = time.time()
     command = request.json.get("command", None)
     # dialog_id = request.json.get("dialog_id", None)
-    if command in ["track_object", "turn_around", "move_forward", "move_backward", "open_door", "move_to_point"]:
+    if any([name in command for name in VALID_COMMANDS]):
         results = {"result": True}
     else:
         results = {"result": False}
