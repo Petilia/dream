@@ -14,7 +14,15 @@ logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
 
-VALID_COMMANDS = ["track_object", "turn_around", "move_forward", "move_backward", "open_door", "move_to_point"]
+VALID_COMMANDS = [
+    "track_object",
+    "turn_counterclockwise",
+    "turn_clockwise",
+    "move_forward",
+    "move_backward",
+    "open_door",
+    "move_to_point",
+]
 
 
 @app.route("/ping", methods=["POST"])
