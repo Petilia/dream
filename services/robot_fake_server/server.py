@@ -15,6 +15,11 @@ logger = logging.getLogger(__name__)
 app = Flask(__name__)
 
 
+@app.route("/ping", methods=["POST"])
+def ping():
+    return "pong"
+
+
 @app.route("/is_command_valid", methods=["POST"])
 def respond_is_command_valid():
     st_time = time.time()
