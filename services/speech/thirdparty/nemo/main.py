@@ -1,5 +1,3 @@
-import re
-
 import requests
 
 # from deeppavlov import build_model
