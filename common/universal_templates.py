@@ -21,6 +21,10 @@ logger = logging.getLogger(__name__)
 
 sentry_sdk.init(getenv("SENTRY_DSN"))
 
+
+GENERATIVE_ROBOT_TEMPLATE = re.compile(
+    r"(AI:|Robot:|ROBOT:|Computer:|COMPUTER:|User:|USER:|Speaker:|SPEAKER:|Human:|HUMAN:)\s?"
+)
 DUMMY_DONTKNOW_RESPONSES = {
     "EN": [
         "What do you want to talk about?",
@@ -351,10 +355,17 @@ def if_switch_topic(uttr):
 
 
 def book_movie_music_found(annotated_uttr):
-    cobot_dialogacts = set(get_topics(annotated_uttr, which="cobot_dialogact_topics"))
-    named_cobot_dialogacts = {"Entertainment_Books", "Entertainment_Movies", "Entertainment_Music"}
-    dialogact_met = len(named_cobot_dialogacts & cobot_dialogacts) > 0
-    return dialogact_met
+    topics = set(get_topics(annotated_uttr, which="all"))
+    target_topics = {
+        "Entertainment_Books",
+        "Books&Literature",
+        "Movies_TV",
+        "Entertainment_Movies",
+        "Music",
+        "Entertainment_Music",
+    }
+    target_topic_met = len(target_topics & topics) > 0
+    return target_topic_met
 
 
 def is_switch_topic(annotated_uttr):

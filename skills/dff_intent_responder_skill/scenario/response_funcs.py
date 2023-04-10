@@ -1,20 +1,21 @@
 #!/usr/bin/env python
 import logging
-import json
 import random
 import re
 from datetime import datetime
 from os import getenv
-import requests
 import json
 
 import common.dff.integration.context as int_ctx
+from common.robot import check_if_valid_robot_command
 from common.utils import get_entities
 from df_engine.core import Actor, Context
 
 
 INTENT_RESPONSE_PHRASES_FNAME = getenv("INTENT_RESPONSE_PHRASES_FNAME", "intent_response_phrases.json")
 LANGUAGE = getenv("LANGUAGE", "EN")
+ROS_FSM_SERVER = getenv("ROS_FSM_SERVER")
+
 logging.basicConfig(format="%(asctime)s - %(pathname)s - %(lineno)d - %(levelname)s - %(message)s", level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 logger.info(f"Intent response phrases are from file: {INTENT_RESPONSE_PHRASES_FNAME}")
@@ -104,8 +105,7 @@ def what_time_respond(ctx: Context, actor: Actor, intention: str):
 
 
 def what_is_current_dialog_id_respond(ctx: Context, actor: Actor, intention: str):
-    dialog = int_ctx.get_dialog(ctx, actor)
-    dialog_id = dialog.get("dialog_id", "unknown")
+    dialog_id = int_ctx.get_dialog_id(ctx, actor)
     response = f"Dialog id is: {dialog_id}"
     return response
 
@@ -130,20 +130,12 @@ def get_respond_funcs():
         "move_forward": move_forward_respond,
         "move_backward": move_backward_respond,
         "open_door": open_door_respond,
-        "move_to_point": move_to_point_respond
+        "move_to_point": move_to_point_respond,
     }
 
 
 def get_human_utterances(ctx: Context, actor: Actor) -> list:
     return {} if ctx.validation else ctx.misc["agent"]["dialog"]["human_utterances"]
-
-
-def send_command_to_robot(command):
-    ROS_FSM_SERVER = "http://172.17.0.1:5000"
-    ROS_FSM_INTENT_ENDPOINT = f"{ROS_FSM_SERVER}/upload_response"
-    logger.info(f"Sending to robot:\n{command}")
-
-    requests.post(ROS_FSM_INTENT_ENDPOINT, data=json.dumps({"text": command}))
 
 
 def track_object_respond(ctx: Context, actor: Actor, intention: str):
@@ -158,39 +150,47 @@ def track_object_respond(ctx: Context, actor: Actor, intention: str):
             response = "Не могу извлечь объект для отслеживания. Повторите команду."
         else:
             response = "I did not get tracked object. Please repeat the command."
-    send_command_to_robot(command)
-    return response
+
+    if check_if_valid_robot_command(command, ROS_FSM_SERVER, dialog_id=int_ctx.get_dialog_id(ctx, actor)):
+        return response, 1.0, {}, {}, {"command_to_perform": command}
+    else:
+        return ""
 
 
 def turn_around_respond(ctx: Context, actor: Actor, intention: str):
     utt = int_ctx.get_last_human_utterance(ctx, actor)
     degree = re.findall(r"[0-9]+", utt["text"])
-    if "против" in utt["text"]:
-        command = f"turn_counterclockwise_{degree[0]}"
+    if "против" in utt["text"] or re.search(r"counter[- ]?clock-?wise", utt["text"]):
         if len(degree) == 1:
+            command = f"turn_counterclockwise_{degree[0]}"
             if LANGUAGE == "RU":
                 response = f"Поворачиваюсь против часовой стрелки на {degree[0]} градусов."
             else:
                 response = f"Turning around counterclockwise by {degree[0]} degrees."
         else:
+            command = f"turn_counterclockwise"
             if LANGUAGE == "RU":
-                response = f"Поворачиваюсь против часовой стрелки."
+                response = "Поворачиваюсь против часовой стрелки."
             else:
-                response = f"Turning around counterclockwise."
+                response = "Turning around counterclockwise."
     else:
-        command = f"turn_clockwise_{degree[0]}"
         if len(degree) == 1:
+            command = f"turn_clockwise_{degree[0]}"
             if LANGUAGE == "RU":
                 response = f"Поворачиваюсь по часовой стрелке на {degree[0]} градусов."
             else:
                 response = f"Turning around clockwise by {degree[0]} degrees."
         else:
+            command = f"turn_clockwise"
             if LANGUAGE == "RU":
-                response = f"Поворачиваюсь по часовой стрелке."
+                response = "Поворачиваюсь по часовой стрелке."
             else:
-                response = f"Turning around clockwise."
-    send_command_to_robot(command)
-    return response
+                response = "Turning around clockwise."
+
+    if check_if_valid_robot_command(command, ROS_FSM_SERVER, dialog_id=int_ctx.get_dialog_id(ctx, actor)):
+        return response, 1.0, {}, {}, {"command_to_perform": command}
+    else:
+        return ""
 
 
 def move_forward_respond(ctx: Context, actor: Actor, intention: str):
@@ -205,12 +205,14 @@ def move_forward_respond(ctx: Context, actor: Actor, intention: str):
     else:
         command = "move_forward"
         if LANGUAGE == "RU":
-            response = f"Двигаюсь вперед."
+            response = "Двигаюсь вперед."
         else:
-            response = f"Moving forward."
+            response = "Moving forward."
 
-    send_command_to_robot(command)
-    return response
+    if check_if_valid_robot_command(command, ROS_FSM_SERVER, dialog_id=int_ctx.get_dialog_id(ctx, actor)):
+        return response, 1.0, {}, {}, {"command_to_perform": command}
+    else:
+        return ""
 
 
 def move_backward_respond(ctx: Context, actor: Actor, intention: str):
@@ -225,22 +227,27 @@ def move_backward_respond(ctx: Context, actor: Actor, intention: str):
     else:
         command = "move_backward"
         if LANGUAGE == "RU":
-            response = f"Двигаюсь назад."
+            response = "Двигаюсь назад."
         else:
-            response = f"Moving backward."
-    send_command_to_robot(command)
-    return response
+            response = "Moving backward."
+
+    if check_if_valid_robot_command(command, ROS_FSM_SERVER, dialog_id=int_ctx.get_dialog_id(ctx, actor)):
+        return response, 1.0, {}, {}, {"command_to_perform": command}
+    else:
+        return ""
 
 
 def open_door_respond(ctx: Context, actor: Actor, intention: str):
     command = "open_door"
     if LANGUAGE == "RU":
-        response = f"Открываю дверь"
+        response = "Открываю дверь"
     else:
-        response = f"Opening the door."
+        response = "Opening the door."
 
-    send_command_to_robot(command)
-    return response
+    if check_if_valid_robot_command(command, ROS_FSM_SERVER, dialog_id=int_ctx.get_dialog_id(ctx, actor)):
+        return response, 1.0, {}, {}, {"command_to_perform": command}
+    else:
+        return ""
 
 
 # covers coords like "5,35", "5, 35", "5 35"
@@ -257,16 +264,14 @@ def move_to_point_respond(ctx: Context, actor: Actor, intention: str):
     elif coords:
         command = f"move_to_point_{coords[0]}"
         response = f"Двигаюсь в точку: {coords[0]}." if LANGUAGE == "RU" else f"Moving to point: {coords[0]}."
-    elif ' ' in utt["text"]:
-        tokens = utt["text"].split()
-        command = f"move_to_point_{tokens[-1]}"
-        response = f"Двигаюсь в {tokens[-1]}" if LANGUAGE == "RU" else f"Moving to: {tokens[-1]}."
     else:
         command = "move_to_point_unknown"
         if LANGUAGE == "RU":
             response = "Не могу извлечь объект для цели. Повторите команду."
         else:
             response = "I did not get target object. Please repeat the command."
-    send_command_to_robot(command)
-    return response
 
+    if check_if_valid_robot_command(command, ROS_FSM_SERVER, dialog_id=int_ctx.get_dialog_id(ctx, actor)):
+        return response, 1.0, {}, {}, {"command_to_perform": command}
+    else:
+        return ""
